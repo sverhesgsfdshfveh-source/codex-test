@@ -405,14 +405,20 @@ $("fileInput").addEventListener('change', async (e) => {
 });
 
 const keysArea = $("keysText");
-keysArea.addEventListener('dragover', (e) => {
+
+// 防止浏览器把拖入文件当作“打开新标签页”
+window.addEventListener('dragover', (e) => e.preventDefault());
+window.addEventListener('drop', (e) => e.preventDefault());
+
+document.addEventListener('dragover', (e) => {
   e.preventDefault();
   keysArea.classList.add('dragover');
 });
-keysArea.addEventListener('dragleave', () => {
-  keysArea.classList.remove('dragover');
+document.addEventListener('dragleave', (e) => {
+  if (!e.relatedTarget) keysArea.classList.remove('dragover');
 });
-keysArea.addEventListener('drop', async (e) => {
+
+document.addEventListener('drop', async (e) => {
   e.preventDefault();
   keysArea.classList.remove('dragover');
   const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
