@@ -1,0 +1,25 @@
+# Binaries
+key-batch-tester
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Go build/test artifacts
+*.test
+*.out
+coverage.out
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Runtime logs / temp
+*.log
+tmp/
+
+# Environment
+.env
+.env.*
