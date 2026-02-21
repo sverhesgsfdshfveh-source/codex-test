@@ -301,6 +301,7 @@ const pageHTML = `<!doctype html>
     .grid { display:grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap:10px; }
     input, textarea, button { width:100%; box-sizing:border-box; border-radius:8px; border:1px solid #374151; background:#0f172a; color:#e5e7eb; padding:10px; }
     textarea { min-height:220px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    textarea.dragover { border-color:#60a5fa; box-shadow:0 0 0 2px rgba(96,165,250,.35) inset; }
     button { cursor:pointer; background:#2563eb; border:none; }
     button.secondary { background:#374151; }
     .row { display:flex; gap:10px; }
@@ -385,13 +386,37 @@ $("stopBtn").onclick = () => {
 };
 
 $("importBtn").onclick = () => $("fileInput").click();
-$("fileInput").addEventListener('change', async (e) => {
-  const f = e.target.files && e.target.files[0];
+async function appendFromTxtFile(f){
   if (!f) return;
+  const name = (f.name || '').toLowerCase();
+  if (!(name.endsWith('.txt') || f.type === 'text/plain' || f.type === '')) {
+    alert('只支持 .txt 文件');
+    return;
+  }
   const text = await f.text();
   const prev = $("keysText").value.trim();
   $("keysText").value = prev ? (prev + "\n" + text) : text;
+}
+
+$("fileInput").addEventListener('change', async (e) => {
+  const f = e.target.files && e.target.files[0];
+  await appendFromTxtFile(f);
   e.target.value = "";
+});
+
+const keysArea = $("keysText");
+keysArea.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  keysArea.classList.add('dragover');
+});
+keysArea.addEventListener('dragleave', () => {
+  keysArea.classList.remove('dragover');
+});
+keysArea.addEventListener('drop', async (e) => {
+  e.preventDefault();
+  keysArea.classList.remove('dragover');
+  const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  await appendFromTxtFile(f);
 });
 
 $("exportOkBtn").onclick = () => {
